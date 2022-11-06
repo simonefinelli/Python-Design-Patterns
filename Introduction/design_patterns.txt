@@ -1,0 +1,36 @@
+Design Patterns are common architectural approaches.
+
+They are used principally with Object-Oriented Programming (OOP), but they are
+useful in all language programming, defining them universally relevant.
+
+We can organize design patterns in 3 sets:
+
+1. Creational
+    Builder
+    Factories
+        - Abstract Factory
+        - Factory Method
+    Prototype
+    Singleton
+
+2. Structural
+    Adapter
+    Bridge
+    Composite
+    Decorator
+    Façade
+    Flyweight
+    Proxy
+
+3. Behavioral
+    Chain of Responsibility
+    Command
+    Interpreter
+    Iterator
+    Mediator
+    Memento
+    Observer
+    State
+    Strategy
+    Template Method
+    Visitor
