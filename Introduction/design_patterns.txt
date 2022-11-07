@@ -3,9 +3,9 @@ Design Patterns are common architectural approaches.
 They are used principally with Object-Oriented Programming (OOP), but they are
 useful in all language programming, defining them universally relevant.
 
-We can organize design patterns in 3 sets:
+We can organize design patterns in 3 sets, called Gamma Categorization:
 
-1. Creational
+1. Creational Patterns: dealing with the creation of objects
     Builder
     Factories
         - Abstract Factory
@@ -13,7 +13,8 @@ We can organize design patterns in 3 sets:
     Prototype
     Singleton
 
-2. Structural
+2. Structural Patterns: it is mainly concerned with the structure of the
+        classes that are involved.
     Adapter
     Bridge
     Composite
@@ -22,7 +23,8 @@ We can organize design patterns in 3 sets:
     Flyweight
     Proxy
 
-3. Behavioral
+3. Behavioral Patterns: they do not follow any central theme, they are all different
+        (each solve a particular problem).
     Chain of Responsibility
     Command
     Interpreter
