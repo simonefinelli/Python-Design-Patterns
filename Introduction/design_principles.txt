@@ -1,0 +1,405 @@
+There are 5 design principles that we must understand to mastering design patterns.
+
+
+1. SINGLE RESPONSIBILITY PRINCIPLE (SRP)
+########################################
+
+The idea is very simple behind SRP is very simple: id you have a class, the class
+should have its primary responsibility and should not take other responsibilities.
+We should try to make our classes as atomic as possible.
+
+For example, the following class Journal is considered atomic only we move
+the persistent functions (save, load) from the class.
+
+class Journal:
+    def __init__(self):
+        self.entries = []
+        self.count = 0
+
+    def add_entry(self, text):
+        self.entries.append(f"{self.count}: {text}")
+        self.count += 1
+
+    def remove_entry(self, pos):
+        del self.entries[pos]
+
+    def __str__(self):
+        return "\n".join(self.entries)
+
+    # break SRP
+    def save(self, filename):
+        file = open(filename, "w")
+        file.write(str(self))
+        file.close()
+
+    def load(self, filename):
+        pass
+
+
+2. OPEN-CLOSED PRINCIPLE (OCP)
+##############################
+
+This principle can be summarized with: open for extension, closed for modification.
+
+from enum import Enum
+class Color(Enum):
+    RED = 1
+    GREEN = 2
+    BLUE = 3
+class Size(Enum):
+    SMALL = 1
+    MEDIUM = 2
+    LARGE = 3
+
+class Product:
+    def __init__(self, name, color, size):
+        self.name = name
+        self.color = color
+        self.size = size
+
+class ProductFilter:
+    def filter_by_color(self, products, color):
+        for p in products:
+            if p.color == color: yield p
+
+    def filter_by_size(self, products, size):
+        for p in products:
+            if p.size == size: yield p
+
+    # if we add this after we have already written and tested the class ProductFilter,
+    # we are violating the OCP principle. This class must open for extension and
+    # closed for modification: so the class should be extended not modified!
+    # In fact, we can write addition filters forever, and we could end in unpleasant
+    # results. This approac doen't scale and we can keep doing forever!
+    def filter_by_size_and_color(self, products, size, color):
+        for p in products:
+            if p.color == color and p.size == size:
+                yield p
+
+
+
+# To avoid this kind of problematics we can use a Specification Patter (advanced patter)
+### Specification Pattern ###
+class Specification:
+    # the Specification class determines whether or not an item satisfies a particular
+    # criteria
+    def is_satisfied(self, item):
+        pass
+
+    # And operator overloading
+    def __and__(self, other):
+        return AndSpecification(self, other)
+
+class AndSpecification(Specification):
+    def __init__(self, *args):
+        self.args = args
+
+    def is_satisfied(self, item):
+        return all(map(lambda spec: spec.is_satisfied(item), self.args))
+
+class Filter:
+    # like the filtering method that we have above.
+    def filter(self, items, spec):  # spec relates the Specification class
+        pass
+### End Specification Pattern ###
+
+
+class ColorSpecification(Specification):
+    def __init__(self, color):
+        self.color = color
+
+    def is_satisfied(self, item):
+        return item.color == self.color
+
+
+class SizeSpecification(Specification):
+    def __init__(self, size):
+        self.size = size
+
+    def is_satisfied(self, item):
+        return item.size == self.size
+
+
+class BetterFilter(Filter):
+    def filter(self, items, spec):
+        for item in items:
+            if spec.is_satisfied(item):
+                yield item
+
+
+apple = Product('Apple', Color.GREEN, Size.SMALL)
+tree = Product('Tree', Color.GREEN, Size.LARGE)
+house = Product('House', Color.BLUE, Size.LARGE)
+
+products = [apple, tree, house]
+
+
+## OLD approac
+# pf = ProductFilter()
+# print('Green products (old):')
+# for p in pf.filter_by_color(products, Color.GREEN):
+#     print(f' - {p.name} is green')
+
+bf = BetterFilter()
+
+print('Green products:')
+green = ColorSpecification(Color.GREEN)
+for p in bf.filter(products, green):
+    print(f' - {p.name} is green')
+
+print('Large products:')
+large = SizeSpecification(Size.LARGE)
+for p in bf.filter(products, large):
+    print(f' - {p.name} is large')
+
+print('Large blue items:')
+# large_blue = AndSpecification(large, ColorSpecification(Color.BLUE))
+large_blue = large & ColorSpecification(Color.BLUE)  # 'and' will not working (python constraint)
+for p in bf.filter(products, large_blue):
+    print(f' - {p.name} is large and blue')
+
+
+So, now, if we want to make a different filter, we can simply inherit for Filter class and write new logic.
+
+This principle says that you must not to end up in a situation where you keep
+modifying code that is already been written, tested, etc. It is much better to define
+a bunch of based classes, and than when you need new criteria, we define new
+specifications, different filters, etc.
+
+
+3. Liskov Substitution PRINCIPLE (LSP)
+######################################
+The idea is that if you have some interface that takes some sort of base class,
+you should be able to stick a derived class in there and everything should work.
+
+class Rectangle:
+    def __init__(self, width, height):
+        self._height = height
+        self._width = width
+
+    @property
+    def area(self):
+        return self._width * self._height
+
+    def __str__(self):
+        return f'Width: {self.width}, height: {self.height}'
+
+    @property
+    def width(self):
+        return self._width
+
+    @width.setter
+    def width(self, value):
+        self._width = value
+
+    @property
+    def height(self):
+        return self._height
+
+    @height.setter
+    def height(self, value):
+        self._height = value
+
+# braking the LSP making a derived class
+class Square(Rectangle):
+    def __init__(self, size):
+        Rectangle.__init__(self, size, size)
+
+    @Rectangle.width.setter
+    def width(self, value):
+        _width = _height = value
+
+    @Rectangle.height.setter
+    def height(self, value):
+        _width = _height = value
+
+
+def use_it(rc):
+    w = rc.width
+    rc.height = 10  # unpleasant side effect: in Square object also change the width
+    expected = int(w * 10)
+    print(f'Expected an area of {expected}, got {rc.area}')
+
+
+rc = Rectangle(2, 3)
+use_it(rc)  # print Expected an area of 20, got 20
+
+sq = Square(5)
+use_it(sq)  # print Expected an area of 50, got 100 - LSP violating
+
+
+4. INTERFACE SEGREGATION PRINCIPLE (LSP)
+########################################
+The idea is that you do not really want to stick to many elements, methods into
+an interface.
+
+from abc import abstractmethod
+
+
+# interface
+class Machine:
+    def print(self, document):
+        raise NotImplementedError()
+
+    def fax(self, document):
+        raise NotImplementedError()
+
+    def scan(self, document):
+        raise NotImplementedError()
+
+
+# ok if you need a multifunction device
+class MultiFunctionPrinter(Machine):
+    def print(self, document):
+        pass
+
+    def fax(self, document):
+        pass
+
+    def scan(self, document):
+        pass
+
+
+class OldFashionedPrinter(Machine):
+    def print(self, document):
+        # ok - print stuff
+        pass
+
+    def fax(self, document):
+        # do-nothing
+        pass
+
+    def scan(self, document):
+        """Not supported!"""
+        raise NotImplementedError('Printer cannot scan!')
+
+    with this class we can see that the interface is too big!
+
+To make things granular we must split that interface into separate parts:
+
+# interface for printing
+class Printer:
+    @abstractmethod
+    def print(self, document): pass
+
+# interface for scanning
+class Scanner:
+    @abstractmethod
+    def scan(self, document): pass
+
+# same for Fax, etc.
+
+
+class MyPrinter(Printer):
+    def print(self, document):
+        print(document)
+
+
+class Photocopier(Printer, Scanner):
+    def print(self, document):
+        print(document)
+
+    def scan(self, document):
+        pass  # something meaningful
+
+
+# interface
+class MultiFunctionDevice(Printer, Scanner):  # , Fax, etc
+    @abstractmethod
+    def print(self, document):
+        pass
+
+    @abstractmethod
+    def scan(self, document):
+        pass
+
+
+class MultiFunctionMachine(MultiFunctionDevice):
+    def __init__(self, printer, scanner):
+        self.printer = printer
+        self.scanner = scanner
+
+    def print(self, document):
+        self.printer.print(document)
+
+    def scan(self, document):
+        self.scanner.scan(document)
+
+
+5. DEPENDENCY INVERSION PRINCIPLE (DIP)
+#######################################
+
+DIP says that high level classes or high level modules should not depend directly
+on low level modules. Instead, they should depend on abstractions.
+What do we mean by abstraction? Typically, is some sort of abstract class or
+class with abstract methods.
+So essentially, we just want to depend on interfaces rather than concrete
+implementations.
+
+from abc import abstractmethod
+from enum import Enum
+
+
+class Relationship(Enum):
+    PARENT = 0
+    CHILD = 1
+    SIBLING = 2
+
+
+class Person:
+    def __init__(self, name):
+        self.name = name
+
+
+class RelationshipBrowser:
+    @abstractmethod
+    def find_all_children_of(self, name): pass
+
+# low-level
+class Relationships(RelationshipBrowser):
+    relations = []
+
+    def add_parent_and_child(self, parent, child):
+        self.relations.append((parent, Relationship.PARENT, child))
+        self.relations.append((child, Relationship.PARENT, parent))
+
+    def find_all_children_of(self, name):
+        for r in self.relations:
+            if r[0].name == name and r[1] == Relationship.PARENT:
+                yield r[2].name
+    # now if the research have to be modified, the Research client does not have to do anything
+
+# hig-level module
+class Research:
+    # dependency on a low-level module directly
+    # bad because strongly dependent on e.g. storage type (in this case we access directly to the list relations)
+    # That could be a problem if te low-level class change the storage type!
+    # To avoid this we can use the interface RelationshipBrowser and move the finding logic to
+    # low-level class
+
+
+    # def __init__(self, relationships):
+    #     # high-level: find all of john's children
+    #     relations = relationships.relations
+    #     for r in relations:
+    #         if r[0].name == 'John' and r[1] == Relationship.PARENT:
+    #             print(f'John has a child called {r[2].name}.')
+
+    def __init__(self, browser):
+        for p in browser.find_all_children_of("John"):
+            print(f'John has a child called {p}')
+
+
+parent = Person('John')
+child1 = Person('Chris')
+child2 = Person('Matt')
+
+# low-level module
+relationships = Relationships()
+relationships.add_parent_and_child(parent, child1)
+relationships.add_parent_and_child(parent, child2)
+
+Research(relationships)
+
+
+The DIP allows us to avoid depending on the internal implementations.
