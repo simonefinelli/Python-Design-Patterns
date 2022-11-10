@@ -1,0 +1,13 @@
+We know that some objects are simple and can be created in a single initialization
+call.
+
+Sometimes, we encounter more complicated objects which required a lot of stages
+to create them. Also, having an object with 10 initializer args is not productive.
+So, what we do is opt for a piecewise construction: instead of getting the entire
+object initialized with one big call, we call different methods of a special component
+called builder.
+A builder, therefore, is a component which constructs the object step by step.
+
+Formal Definition: When piecewise object construction is complicated, provide
+an API for doing it succinctly.
+
