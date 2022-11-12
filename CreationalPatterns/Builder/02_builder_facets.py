@@ -26,7 +26,7 @@ class Person:
                f'earning {self.annual_income}\n'
 
 
-class PersonBuilder:  # facade
+class PersonBuilder:
     """Concrete class."""
     # to not have extra replications
     def __init__(self, person=None):
