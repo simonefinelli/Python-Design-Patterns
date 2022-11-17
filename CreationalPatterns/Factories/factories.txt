@@ -1,0 +1,13 @@
+In this category we have two kind of Factories: Factory Method and Abstract
+Factory.
+
+But before we start with the cose, why de we need Factories?
+Sometimes object creation logic becomes a bit too convoluted: initializers could
+get longer and longer and more sophisticated, and we might want to move this
+logic somewhere.
+In this case, however, we create a whole object (unlike Builder).
+
+To outsourcing the process of the creation of an object (complicated enough) we:
+- need a separated method: the Factory Method. It typically is a static method;
+- move the Factory Method to a separate class (Factory);
+- possibility of create hierarchy of factories with an Abstract Factory.
