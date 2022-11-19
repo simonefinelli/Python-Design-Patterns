@@ -1,7 +1,7 @@
 In this category we have two kind of Factories: Factory Method and Abstract
 Factory.
 
-But before we start with the cose, why de we need Factories?
+Why de we need Factories?
 Sometimes object creation logic becomes a bit too convoluted: initializers could
 get longer and longer and more sophisticated, and we might want to move this
 logic somewhere.
