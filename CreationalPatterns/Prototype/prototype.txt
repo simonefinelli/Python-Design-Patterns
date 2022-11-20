@@ -1,0 +1,14 @@
+In real word applications, real complicated objects are never designed from scratch.
+So, we look at what is already done and make improves the existing structures.
+
+The Prototype design pattern goes in the same above consept: the idea is that we
+have already got some of existing design, and we want ot make a copy of that,
+customizing it and then start using it.
+Note that the existing design can be partially or fully constructed. We have simply
+made a copy of the prototype (already existing design) to customize it.
+
+To copy (clone) the existing design we can use a Factory design. For example, we
+can build a prototype factory with few pre-defined designs, and then we could ask
+the Factory to customize the that designs.
+
+
