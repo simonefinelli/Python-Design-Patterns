@@ -1,0 +1,16 @@
+"When discussing which patterns to drop, we found that we still love them all.
+(Not really - I'm in favor of dropping Singleton. Its use is almost always a
+design smell.)" - Erich Gamma author of Design Pattern book.
+
+A Singleton is a Component which is instantiated only once.
+
+Motivation for using the Singleton:
+- For some components it only makes sense to have one instance in the system.
+  For example an object factory (but in most cases it simply does not make
+  sense because an object factory is typically stateless - all static methods
+  principally);
+
+- An object initialization is too expensive, so we want to do once and reuse
+  that instance in all the system;
+
+- Prevent creating additional instances of an object.
