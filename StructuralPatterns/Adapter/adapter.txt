@@ -1,0 +1,9 @@
+The Adapter pattern is a simple design that tries to adapt the interface that
+you are given to the interface that you actually need.
+
+To make a similitude, the pattern is similar to the travel power socket where we
+have different plug type. In fact, we cannot modify our electrical gadgets
+(with a predefined interface), but the socket (adapter design) makes the job.
+
+So an Adapter is an 'in-between component' that allow us to reuse given
+interfaces with new ones.
