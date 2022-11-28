@@ -4,4 +4,4 @@ over both aggregates of componentes and individual components.
 
 Composite patters allow us to create compound objects. For example, a Person
 class (object) can have a name (individual component) and an address (represented
-by another class - aggregates of components)
+by another class - aggregates of components).
