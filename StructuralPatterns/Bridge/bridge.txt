@@ -1,0 +1,61 @@
+The Bridge design pattern is a mechanism that decouples an interface (hierarchy)
+form an implementation. It makes that connecting components together
+through abstractions.
+
+The Bridge prevents a "Cartesian product" complexity explosion.
+
+For example, we have a ThreadScheduler base class; that class can be preemptive
+or cooperative and can run on Windows or Unix. So we end up with 2x2 scenario:
+WindowsPTs, UnixPTS, WindowsCTS, UnixCTS (Cartesian product).
+This pattern avoids the that entity explosion.
+
+Before use Bridge
+
+                              #################
+                               ThreadScheduler
+                              #################
+                                      *
+                                     ---
+                                      |
+                                      |
+                  ------------------------------------------
+                  |                                        |
+       ###########################           ############################
+        PreemptiveThreadScheduler             CooperativeThreadScheduler
+       ###########################           ############################
+                    *                                      *
+                   ---                                    ---
+                    |                                      |
+                    |                                      |
+              -------------                         ---------------
+              |           |                         |             |
+          ########    #########                  ########     #########
+           WinPTS      UnixPTX                    WinCTS       UnixCTS
+          ########    #########                  ########     #########
+
+
+
+After use Bridge
+
+#################
+ ThreadScheduler ---------------------------------
+#################                                |
+ *                                              ---
+---                                              *
+ |                                      ####################
+ |                                       IPlatformScheduler
+ |                                      ####################
+ |                                               *
+ |                                              ---
+ |                                               |
+ |  ###########################                  |  ##################
+ |-- PreemptiveThreadScheduler                   |-- WindowsScheduler
+ |  ###########################                  |  ##################
+ |                                               |
+ |  ############################                 |  ###############
+ |-- CooperativeThreadScheduler                  |-- UnixScheduler
+    ############################                    ###############
+
+
+So, with Bridge design pattern we take advantage of inheritance plus aggregation.
+
