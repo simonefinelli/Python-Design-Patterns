@@ -1,7 +1,4 @@
 The goal of the Composite design pattern is to treat individual components
 and groups of objects in a uniform manner, so to provide an identical interface
-over both aggregates of componentes and individual components.
-
-Composite patters allow us to create compound objects. For example, a Person
-class (object) can have a name (individual component) and an address (represented
-by another class - aggregates of components).
+over both aggregates of componentes and individual components. So, Composite
+patters allow us to create compound objects.
